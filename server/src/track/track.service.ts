@@ -1,25 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, Query} from '@nestjs/common';
 import {InjectModel} from "@nestjs/mongoose";
 import {Track, TrackDocument} from "./shemas/track.schema";
 import {Model, ObjectId} from "mongoose";
 import {Comment, CommentDocument} from "./shemas/comment.schema";
 import {CreateTrackDto} from "./dto/create-track.dto";
 import {CreateCommentDto} from "./dto/create-comment.dto";
+import {FileService, FileType} from "../file/file.service";
 
 @Injectable()
 export class TrackService {
     constructor(@InjectModel(Track.name) private trackModel: Model<TrackDocument>,
-                @InjectModel(Comment.name) private commentModel: Model<CommentDocument>) {}
+                @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+                private fileService: FileService) {}
 
     async create (dto: CreateTrackDto, picture, audio): Promise<Track> {
+        const audioName = this.fileService.createFile(FileType.AUDIO, audio);
+        const pictureName = this.fileService.createFile(FileType.IMAGE, picture);
+
         const track = await this.trackModel.create({
-            ...dto, listens: 0
+            ...dto, listens: 0, audio: audioName, picture: pictureName
         })
         return track;
     }
 
-    async getAll (): Promise<Track[]> {
-        const tracks = await this.trackModel.find();
+    async getAll (count: number = 10, offset: number = 0): Promise<Track[]> {
+        const tracks = await this.trackModel.find().skip(offset).limit(count);
         return tracks;
     }
 
@@ -41,5 +46,16 @@ export class TrackService {
 
         await track.save();
         return comment;
+    }
+
+    async listen(id: ObjectId) {
+        const track = await this.trackModel.findById(id);
+        track.listens += 1;
+        track.save();
+    }
+
+    async search(query: string, count: number, offset: number): Promise<Track[]> {
+        const tracks = await this.trackModel.find({ name: { $regex: new RegExp(query, 'i')} }).skip(offset).limit(count);
+        return tracks;
     }
 }
