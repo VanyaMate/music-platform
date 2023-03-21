@@ -1,12 +1,11 @@
 import { Button } from "@mui/material";
-import Navbar from "../components/Navbar";
+import MainLayout from "../layouts/MainLayout";
 
 const Index = () => {
     return (
-        <div>
-            <Navbar/>
+        <MainLayout>
             <Button>Button</Button>
-        </div>
+        </MainLayout>
     );
 };
 
