@@ -11,7 +11,7 @@ config();
     imports: [
         TrackModule,
         ServeStaticModule.forRoot({
-            rootPath: path.resolve(__dirname, 'static'),
+            rootPath: path.resolve(__dirname, '..', 'static'),
         }),
         MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_DB_LOGIN}:${process.env.MONGO_DB_PASSWORD}@cluster0.yuutfwv.mongodb.net/${process.env.MONGO_DB_NAME}?retryWrites=true&w=majority`),
         FileModule

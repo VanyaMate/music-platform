@@ -128,11 +128,8 @@ export default function Navbar(props: { children: any }) {
                 </DrawerHeader>
                 <List>
                     {menuItems.map(({ text, href }, index) => (
-                        <ListItem key={text} disablePadding onClick={() => router.push(href)}>
+                        <ListItem key={text} disablePadding onClick={() => router.push(href, undefined, { shallow: true })}>
                             <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItemButton>
                         </ListItem>
